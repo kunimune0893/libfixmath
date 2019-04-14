@@ -52,32 +52,33 @@ int main()
   int status = 0;
   
   {
-    COMMENT("Testing basic multiplication");
-    TEST(fix16_mul(fix16_from_int(5), fix16_from_int(5)) == fix16_from_int(25));
-    TEST(fix16_mul(fix16_from_int(-5), fix16_from_int(5)) == fix16_from_int(-25));
-    TEST(fix16_mul(fix16_from_int(-5), fix16_from_int(-5)) == fix16_from_int(25));
-    TEST(fix16_mul(fix16_from_int(5), fix16_from_int(-5)) == fix16_from_int(-25));
+    COMMENT( "Testing basic multiplication" );
+    TEST( fix16_mul( fix16_from_int( 5), fix16_from_int( 5) ) == fix16_from_int( 25) );
+    TEST( fix16_mul( fix16_from_int(-5), fix16_from_int( 5) ) == fix16_from_int(-25) );
+    TEST( fix16_mul( fix16_from_int(-5), fix16_from_int(-5) ) == fix16_from_int( 25) );
+    TEST( fix16_mul( fix16_from_int( 5), fix16_from_int(-5) ) == fix16_from_int(-25) );
   }
   
 #ifndef FIXMATH_NO_ROUNDING
   {
-    COMMENT("Testing multiplication rounding corner cases");
-    TEST(fix16_mul(0, 10) == 0);
-    TEST(fix16_mul(2, 0x8000) == 1);
-    TEST(fix16_mul(-2, 0x8000) == -1);
-    TEST(fix16_mul(3, 0x8000) == 2);
-    TEST(fix16_mul(-3, 0x8000) == -2);
-    TEST(fix16_mul(2, 0x7FFF) == 1);
-    TEST(fix16_mul(-2, 0x7FFF) == -1);
-    TEST(fix16_mul(2, 0x8001) == 1);
-    TEST(fix16_mul(-2, 0x8001) == -1);
+    COMMENT( "Testing multiplication rounding corner cases" );
+    TEST( fix16_mul( 0,     10) ==  0 );
+    TEST( fix16_mul( 2, 0x8000) ==  1 );//  2 * 0.5 =  1
+    TEST( fix16_mul(-2, 0x8000) == -1 );// -2 * 0.5 = -1
+    TEST( fix16_mul( 3, 0x8000) ==  2 );//  3 * 0.5 =  2
+    TEST( fix16_mul(-3, 0x8000) == -2 );// -3 * 0.5 = -2
+    TEST( fix16_mul( 2, 0x7FFF) ==  1 );//  2 * 0.499.. =  1
+    TEST( fix16_mul(-2, 0x7FFF) == -1 );// -2 * 0.499.. = -1
+    TEST( fix16_mul( 2, 0x8001) ==  1 );//  2 * 0.500.. =  1
+    TEST( fix16_mul(-2, 0x8001) == -1 );// -2 * 0.500.. = -1
   }
 #endif
   
   {
     unsigned int i, j;
     int failures = 0;
-    COMMENT("Running testcases for multiplication");
+    
+    COMMENT( "Running testcases for multiplication" );
     
     for (i = 0; i < TESTCASES_COUNT; i++)
     {

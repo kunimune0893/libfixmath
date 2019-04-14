@@ -1,20 +1,27 @@
 #include "fix16.h"
 #include "int64.h"
 
-
-/* Subtraction and addition with overflow detection.
+/*
+ * Subtraction and addition with overflow detection.
  * The versions without overflow detection are inlined in the header.
+ *
+ * ・オーバーフロー検出ありの引き算と足し算
+ * ・オーバーフロー検出なしのバージョンはヘッダにインラインで記述している
  */
-#ifndef FIXMATH_NO_OVERFLOW
+#ifndef FIXMATH_NO_OVERFLOW // オーバーフローあり
 fix16_t fix16_add(fix16_t a, fix16_t b)
 {
 	// Use unsigned integers because overflow with signed integers is
 	// an undefined operation (http://www.airs.com/blog/archives/120).
+	// 符号なし整数を使用する、なぜなら、
+	// 符号あり整数のオーバーフローは定義されていない操作だからである。
 	uint32_t _a = a, _b = b;
 	uint32_t sum = _a + _b;
-
+	
 	// Overflow can only happen if sign of a == sign of b, and then
 	// it causes sign of sum != sign of a.
+	// オーバーフローは a の符号と b の符号が同じ場合にのみ発生する。
+	// そして、それは合計の符号と a の符号が異なる場合に引き起こされる。
 	if (!((_a ^ _b) & 0x80000000) && ((_a ^ sum) & 0x80000000))
 		return fix16_overflow;
 	
@@ -25,58 +32,69 @@ fix16_t fix16_sub(fix16_t a, fix16_t b)
 {
 	uint32_t _a = a, _b = b;
 	uint32_t diff = _a - _b;
-
+	
 	// Overflow can only happen if sign of a != sign of b, and then
 	// it causes sign of diff != sign of a.
+	// オーバーフローは、a の符号と b の符号が同じ場合にのみ発生し、
+	// a の符号と結果の符合が異なった場合に発生する
 	if (((_a ^ _b) & 0x80000000) && ((_a ^ diff) & 0x80000000))
 		return fix16_overflow;
 	
 	return diff;
 }
 
-/* Saturating arithmetic */
+/* Saturating arithmetic (飽和演算) */
+/* オーバーフロー時に最大値or最小値にクリップする加算と減算 */
 fix16_t fix16_sadd(fix16_t a, fix16_t b)
 {
 	fix16_t result = fix16_add(a, b);
-
+	
 	if (result == fix16_overflow)
 		return (a >= 0) ? fix16_maximum : fix16_minimum;
-
+	
 	return result;
-}	
+}
 
 fix16_t fix16_ssub(fix16_t a, fix16_t b)
 {
 	fix16_t result = fix16_sub(a, b);
-
+	
 	if (result == fix16_overflow)
 		return (a >= 0) ? fix16_maximum : fix16_minimum;
-
+	
 	return result;
 }
 #endif
 
 
 
-/* 64-bit implementation for fix16_mul. Fastest version for e.g. ARM Cortex M3.
+/*
+ * 64-bit implementation for fix16_mul. Fastest version for e.g. ARM Cortex M3.
  * Performs a 32*32 -> 64bit multiplication. The middle 32 bits are the result,
  * bottom 16 bits are used for rounding, and upper 16 bits are used for overflow
  * detection.
+ * 
+ * fix16_mulの64ビット実装。 ※通常はコレを使う
+ * 例えば、ARM Cortex M3 向けの最速のバージョン。
+ * 32 * 32 -> 64ビット乗算を実行する。
+ * 中央の32ビットが結果で、下位16ビットが丸めに使用され、
+ * 上位16ビットがオーバーフロー検出に使用される。
  */
  
 #if !defined(FIXMATH_NO_64BIT) && !defined(FIXMATH_OPTIMIZE_8BIT)
+// 64bitあり、かつ、8bit最適化なしの場合
 fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1)
 {
 	int64_t product = (int64_t)inArg0 * inArg1;
 	
-	#ifndef FIXMATH_NO_OVERFLOW
+	#ifndef FIXMATH_NO_OVERFLOW // オーバーフローありの場合
 	// The upper 17 bits should all be the same (the sign).
 	uint32_t upper = (product >> 47);
 	#endif
 	
 	if (product < 0)
 	{
-		#ifndef FIXMATH_NO_OVERFLOW
+		#ifndef FIXMATH_NO_OVERFLOW // オーバーフローありの場合
 		if (~upper)
 				return fix16_overflow;
 		#endif
@@ -98,18 +116,25 @@ fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1)
 	return product >> 16;
 	#else
 	fix16_t result = product >> 16;
-	result += (product & 0x8000) >> 15;
+	result += (product & 0x8000) >> 15;// 1/2の桁(1 or 0)を加算している (四捨五入)
 	
 	return result;
 	#endif
 }
 #endif
 
-/* 32-bit implementation of fix16_mul. Potentially fast on 16-bit processors,
+/*
+ * 32-bit implementation of fix16_mul. Potentially fast on 16-bit processors,
  * and this is a relatively good compromise for compilers that do not support
  * uint64_t. Uses 16*16->32bit multiplications.
+ * 
+ * fix16_mulの32ビット実装。
+ * 16ビットプロセッサでは潜在的に高速であり、
+ * これはuint64_tをサポートしていないコンパイラにとって比較的良い妥協案。
+ * 16 * 16→32ビット乗算を使用します。
  */
 #if defined(FIXMATH_NO_64BIT) && !defined(FIXMATH_OPTIMIZE_8BIT)
+// 64bitなし、かつ、8bit最適化なしの場合
 fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1)
 {
 	// Each argument is divided to 16-bit parts.
@@ -166,11 +191,17 @@ fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1)
 }
 #endif
 
-/* 8-bit implementation of fix16_mul. Fastest on e.g. Atmel AVR.
+/*
+ * 8-bit implementation of fix16_mul. Fastest on e.g. Atmel AVR.
  * Uses 8*8->16bit multiplications, and also skips any bytes that
  * are zero.
+ * 
+ * fix16_mulの8ビット実装。
+ * 例えば、Atmel AVR向けの最速バージョン。
+ * 8 * 8 -> 16ビットの乗算を使用し、ゼロのバイトもすべてスキップする。
  */
 #if defined(FIXMATH_OPTIMIZE_8BIT)
+// 8bit最適化ありの場合
 fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1)
 {
 	uint32_t _a = (inArg0 >= 0) ? inArg0 : (-inArg0);
@@ -252,6 +283,7 @@ fix16_t fix16_mul(fix16_t inArg0, fix16_t inArg1)
 
 #ifndef FIXMATH_NO_OVERFLOW
 /* Wrapper around fix16_mul to add saturating arithmetic. */
+/* fix16_mul 飽和演算付きのラッパー */
 fix16_t fix16_smul(fix16_t inArg0, fix16_t inArg1)
 {
 	fix16_t result = fix16_mul(inArg0, inArg1);
@@ -268,9 +300,16 @@ fix16_t fix16_smul(fix16_t inArg0, fix16_t inArg1)
 }
 #endif
 
-/* 32-bit implementation of fix16_div. Fastest version for e.g. ARM Cortex M3.
+/*
+ * 32-bit implementation of fix16_div. Fastest version for e.g. ARM Cortex M3.
  * Performs 32-bit divisions repeatedly to reduce the remainder. For this to
  * be efficient, the processor has to have 32-bit hardware division.
+ * 
+ * fix16_divの32ビット実装。
+ * 例えば、ARM Cortex M3 向けの最速のバージョン。
+ * 残りを減らすために32ビット除算を繰り返し実行する。
+ * これを効率的にするために、プロセッサは32ビットの
+ * ハードウェアの除算を持つ必要がある。
  */
 #if !defined(FIXMATH_OPTIMIZE_8BIT)
 #ifdef __GNUC__

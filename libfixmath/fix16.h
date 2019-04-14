@@ -52,7 +52,7 @@ static inline int fix16_to_int(fix16_t a)
     return (a >> 16);
 #else
 	if (a >= 0)
-		return (a + (fix16_one >> 1)) / fix16_one;
+		return (a + (fix16_one >> 1)) / fix16_one;// 四捨五入 (1/2を加算してからintに戻す)
 	return (a - (fix16_one >> 1)) / fix16_one;
 #endif
 }

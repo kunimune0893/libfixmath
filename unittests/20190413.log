@@ -1,0 +1,44 @@
+kunimune@2a266adac8c1(78) ~/kmodule_test/machine-learning/libfixmath/unittests
+[2:0]$ make
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror                                                                     -o fix16_unittests_ro64 fix16_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror -DFIXMATH_NO_ROUNDING                                               -o fix16_unittests_no64 fix16_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror -DFIXMATH_NO_OVERFLOW                                               -o fix16_unittests_rn64 fix16_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror -DFIXMATH_NO_ROUNDING -DFIXMATH_NO_OVERFLOW                         -o fix16_unittests_nn64 fix16_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror -DFIXMATH_NO_64BIT                                                  -o fix16_unittests_ro32 fix16_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror -DFIXMATH_NO_ROUNDING -DFIXMATH_NO_64BIT                            -o fix16_unittests_no32 fix16_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror -DFIXMATH_NO_OVERFLOW -DFIXMATH_NO_64BIT                            -o fix16_unittests_rn32 fix16_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror -DFIXMATH_NO_OVERFLOW -DFIXMATH_NO_ROUNDING -DFIXMATH_NO_64BIT      -o fix16_unittests_nn32 fix16_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror -DFIXMATH_OPTIMIZE_8BIT                                             -o fix16_unittests_ro08 fix16_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror -DFIXMATH_NO_ROUNDING -DFIXMATH_OPTIMIZE_8BIT                       -o fix16_unittests_no08 fix16_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror -DFIXMATH_NO_OVERFLOW -DFIXMATH_OPTIMIZE_8BIT                       -o fix16_unittests_rn08 fix16_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror -DFIXMATH_NO_OVERFLOW -DFIXMATH_NO_ROUNDING -DFIXMATH_OPTIMIZE_8BIT -o fix16_unittests_nn08 fix16_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+       echo fix16_unittests_ro64 && ./fix16_unittests_ro64 > /dev/null \
+  &&   echo fix16_unittests_no64 && ./fix16_unittests_no64 > /dev/null \
+  &&   echo fix16_unittests_rn64 && ./fix16_unittests_rn64 > /dev/null \
+  &&   echo fix16_unittests_nn64 && ./fix16_unittests_nn64 > /dev/null \
+  &&   echo fix16_unittests_ro32 && ./fix16_unittests_ro32 > /dev/null \
+  &&   echo fix16_unittests_no32 && ./fix16_unittests_no32 > /dev/null \
+  &&   echo fix16_unittests_rn32 && ./fix16_unittests_rn32 > /dev/null \
+  &&   echo fix16_unittests_nn32 && ./fix16_unittests_nn32 > /dev/null \
+  &&   echo fix16_unittests_ro08 && ./fix16_unittests_ro08 > /dev/null \
+  &&   echo fix16_unittests_no08 && ./fix16_unittests_no08 > /dev/null \
+  &&   echo fix16_unittests_rn08 && ./fix16_unittests_rn08 > /dev/null \
+  &&   echo fix16_unittests_nn08 && ./fix16_unittests_nn08 > /dev/null &&  true
+fix16_unittests_ro64
+fix16_unittests_no64
+fix16_unittests_rn64
+fix16_unittests_nn64
+fix16_unittests_ro32
+fix16_unittests_no32
+fix16_unittests_rn32
+fix16_unittests_nn32
+fix16_unittests_ro08
+fix16_unittests_no08
+fix16_unittests_rn08
+fix16_unittests_nn08
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror  -o fix16_exp_unittests fix16_exp_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+./fix16_exp_unittests > /dev/null
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror  -o fix16_str_unittests fix16_str_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+./fix16_str_unittests > /dev/null
+gcc -g -O0 -I../libfixmath -Wall -Wextra -Werror  -o fix16_macros_unittests fix16_macros_unittests.c ../libfixmath/fix16.c ../libfixmath/fix16_sqrt.c ../libfixmath/fix16_str.c ../libfixmath/fix16_exp.c ../libfixmath/fix16.h -lm
+./fix16_macros_unittests > /dev/null
